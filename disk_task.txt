@@ -1,0 +1,21 @@
+DATE=`date +"%d%b%y"`
+echo "Server_name,Reachability,Size,Used,Available,Used%" > disk_details_$DATE.csv
+for server in `cat servers.txt`
+do
+pin=$(ping -c 2 ${server})
+if [ $? -eq 0 ];then
+sshpass -p "Roshini@49" ssh vaishu@$server '
+host=$(hostname)
+status='pining'
+
+#install=$(sudo yum install sshpass -y)
+d1=$(df -h --total |grep total | awk '\''{print $2","$3","$4","$5}'\'')
+
+echo "$host,$status,$d1"
+
+'>>disk_details_$DATE.csv
+else
+status="Not ping"
+echo "$server,$status,,,,">>disk_details_$DATE.csv
+fi
+done
